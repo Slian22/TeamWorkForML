@@ -14,13 +14,27 @@ def deleteTheCol(cutoff=0.5,file='sample/model_sample.csv',outfile='sample/Pre_S
     os.path.exists(outfile)
     os.remove(outfile)
     df.to_csv(outfile)
-def deleteTheRow(cutoff=0.5,file='sample/model_sample.csv',outfile='sample/Pre_Sample.csv'):
+def deleteTheRow(cutoff=0.5,file='sample/model_sample.csv',outfile='sample/Pre2_Sample.csv'):
     import pandas as pd
     import os
     inputfile = file
     df = pd.read_csv(inputfile)
+    Row = len(df) - 1  # 列数
+    id=[]
     for i in [index for index in df]:
+        id.append(i)
         print(i)
+    rows_not_null = df.count(axis=1)
+    pd1 = pd.DataFrame(rows_not_null)
+    rows_NotNull = pd.DataFrame(rows_not_null)
+    for i in (1,len(id)):
+        notnullnum=pd1.iloc[0, i-1]-1
+        if ((Row-notnullnum)/Row) >cutoff :
+            df.drop[i-1]
+    os.path.exists(outfile)
+    os.remove(outfile)
+    df.to_csv(outfile)
+
 def FillNaN_PD():
     import numpy as np
     import pandas as pd
