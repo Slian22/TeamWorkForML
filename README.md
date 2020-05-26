@@ -6,25 +6,29 @@ Machine Learning With Python For TeamWork
 
 ### 1.1 删除列缺失值较多的数据（自定义CutOff）
 
-- [ ] ```python
+```python
   def deleteTheCol(cutoff,inputfile,outputfile):
       return True
   #c传入输入文件，输出文件路径；cutoff为自定义删除缺失为(1-(cutoff*100))%的列
-  ```
+```
+
+- [x] 
 
 ### 1.2 删除行缺失值较多的数据（程序生成CSV，手动格式删除）[可选]
 
-- [ ] ```python
+```python
   def deleteTheRow(file,outfile):
       return True
   #传入输入文件，输出文件路径；会生成比原先数据多一列的数据，值越大表明缺失的数据越少
-  ```
+```
+
+- [x] 
 
 ### 1.3 缺失值填充（SimpleImputer{或者插值法或者均值/中位数/众数插补}+填充0值）
 
 本项目采取mean值填充，若想修改方法去QuickInit中的FillNaN_PD修改
 
-- [x] ```python
+```python
   def FillNaN_PD(inputfile):#不带标签的Pandas，自行补充
       return DataFrame
   #传入输入文件，返回不带标签的DataFrame类型数据
@@ -34,13 +38,15 @@ Machine Learning With Python For TeamWork
   feature = list(pd_Example.columns.values)  # 提取特征值
   pd_Example.columns = feature
   '''
-  ```
+```
 
-- [ ] ```python
+ ```python
   def FillNaN_NP(inputfile3):#不带标签的Numpy,自行补充
       return series
-  同上
-  ```
+  #Same as FillNaN_PD
+ ```
+
+- [x] 
 
 ### 1.4 异常值处理（删除/平均值修正)
 
@@ -89,13 +95,12 @@ Machine Learning With Python For TeamWork
 
 ### *1.6 LASSO
 
-- [ ] ```python
+```python
   from sklearn.linear_model import Lasso,LassoCV,LassoLarsCV
   data.corr()
   ....
-  ```
-
-  
+```
+- [ ] 
 
 ## 2、解决非平衡数据问题
 
@@ -125,6 +130,8 @@ random自己设置
 
 ### 调参gini或者entropy 树深节点数 
 
+（正在整理调包参数）
+
 | 参数                                             | DecisionTreeClassifier                                       |
 | :----------------------------------------------- | :----------------------------------------------------------- |
 | 特征选择标准criterion                            | 可以使用"gini"或者"entropy"，前者代表基尼系数，后者代表信息增益。一般说使用默认的基尼系数"gini"就可以了，即CART算法。除非你更喜欢类似ID3, C4.5的最优特征选择方法。 |
@@ -139,16 +146,16 @@ random自己设置
 | 节点划分最小不纯度min_impurity_split             | 这个值限制了决策树的增长，如果某节点的不纯度(基尼系数，信息增益，均方差，绝对差)小于这个阈值，则该节点不再生成子节点。即为叶子节点 。 |
 | 数据是否预排序presort                            | 这个值是布尔值，默认是False不排序。一般来说，如果样本量少或者限制了一个深度很小的决策树，设置为true可以让划分点选择更加快，决策树建立的更加快。如果样本量太大的话，反而没有什么好处。问题是样本量少的时候，我速度本来就不慢。所以这个值一般懒得理它就可以了。 |
 
-- [ ] 
+- [ ] 还没实现
 
 ### 4、交叉验证+网格搜索+随机搜索
 
-- [ ] 
+- [ ] 还没实现
 
 ## 5、准确率+精确率+召回率F-score 给出分析
 
-- [ ] 
+- [ ] 还没实现
 
 ## 6、ROC+KS+Precision-Recall
 
-- [ ] 
+- [ ] 还没实现
