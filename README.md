@@ -12,7 +12,7 @@ Machine Learning With Python For TeamWork
   #c传入输入文件，输出文件路径；cutoff为自定义删除缺失为(1-(cutoff*100))%的列
 ```
 
-- [x] 
+- [x] 已实现
 
 ### 1.2 删除行缺失值较多的数据（程序生成CSV，手动格式删除）[可选]
 
