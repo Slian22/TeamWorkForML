@@ -1,7 +1,8 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
+from QuickStart_Rhy.api import ipinfo
 import pandas as pd
-def deleteTheCol(cutoff=0.5,file='sample/model_sample.csv',outfile='sample/Pre_Sample.csv'):
+def deleteTheCol(cutoff=0.5,file="sample/model_sample.csv",outfile="sample/Pre_Sample.csv"):
     #运行这个函数即为自定义删除缺失为（cutoff*100）%的列
     import pandas as pd
     import os
@@ -15,7 +16,8 @@ def deleteTheCol(cutoff=0.5,file='sample/model_sample.csv',outfile='sample/Pre_S
     if (os.path.exists(outfile)):
         os.remove(outfile)
     df.to_csv(outfile)
-def Sample_NotNull(file='sample/model_sample.csv',outfile='sample/model_sample_NotNumber.csv'):
+    return True
+def Sample_NotNull(file="sample/model_sample.csv",outfile="sample/model_sample_NotNumber.csv"):
     #自行删除空值多的行。
     import pandas as pd
     import numpy as np
@@ -27,13 +29,15 @@ def Sample_NotNull(file='sample/model_sample.csv',outfile='sample/model_sample_N
     if(os.path.exists(outfile)):
         os.remove(outfile)
     df.to_csv(outfile)
-def FillNaN_PD(file='sample/model_sample.csv'):
+    return True
+def FillNaN_PD(inputfile2):
     import numpy as np
     import pandas as pd
     import os
+    print(inputfile2)
     # Fill The Data using SimpleImputer
     from sklearn.impute import SimpleImputer
-    df = pd.read_csv(file)
+    df = pd.read_csv(inputfile2)
     numpy_Data = np.array(df)
     imp = SimpleImputer(missing_values=np.nan, strategy='mean')
     Sample_data = np.delete(numpy_Data, 0, axis=1)
@@ -66,3 +70,14 @@ def CutTheTrain(inputfile='sample/model_sample.csv',p=0.8):
     test = data[int(len(data) * p):, :]
     #return train+test-Numpy
     return train,test
+def SMOTE(inputfile='sample/model_sample.csv'):
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from sklearn import model_selection
+    from sklearn import tree
+    from sklearn import metrics
+    from imblearn.over_sampling import SMOTE
+    data=pd.read_csv(inputfile)
+    return True
+#def MakeTree(criterion='gini',)
