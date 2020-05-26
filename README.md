@@ -22,7 +22,7 @@ Machine Learning With Python For TeamWork
   #传入输入文件，输出文件路径；会生成比原先数据多一列的数据，值越大表明缺失的数据越少
 ```
 
-- [x] 
+- [x] 已实现
 
 ### 1.3 缺失值填充（SimpleImputer{或者插值法或者均值/中位数/众数插补}+填充0值）
 
@@ -46,7 +46,7 @@ Machine Learning With Python For TeamWork
   #Same as FillNaN_PD
  ```
 
-- [x] 
+- [x] 已实现
 
 ### 1.4 异常值处理（删除/平均值修正)
 
@@ -100,7 +100,7 @@ Machine Learning With Python For TeamWork
   data.corr()
   ....
 ```
-- [ ] 
+- [ ] 未应用，已实现
 
 ## 2、解决非平衡数据问题
 
