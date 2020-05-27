@@ -95,7 +95,12 @@ Machine Learning With Python For TeamWork
   #包括主成分的热图
   ```
 
-  
+  ```python
+  def Corr(inputfile):#尽量传入的数据相对维数较少
+      return True
+  # 相关性+相关性热力图+分层相关性热力图
+  # 依赖['seaborn','matplotlib']
+  ```
 
 ### *1.6 LASSO
 
@@ -133,8 +138,6 @@ random自己设置
 ## 3、决策树
 
 ### 调参gini或者entropy 树深节点数 
-
-（正在整理调包参数）
 
 | 参数                                             | DecisionTreeClassifier                                       |
 | :----------------------------------------------- | :----------------------------------------------------------- |

@@ -91,7 +91,7 @@ def SMOTE_SAMPLE(inputfile):#返回Numpy
     y = churn['y']
     X_train, X_test, y_train, y_test = train_test_split(X_normal, y, test_size=0.2, random_state=4)#testsize和random_state自己设置
     over_samples = SMOTE(random_state=1234)#random自己设置
-    over_samples_X, over_samples_y = over_samples.fit_sample(X_train, y_train.astype('int'))
+    over_samples_X, over_samples_y = over_samples.fit_sample(X_train, y_train.astype('float'))
     # 重抽样前的类别比例
     print("重抽样前的类别比例")
     print(y_train.value_counts() / len(y_train))
@@ -143,4 +143,109 @@ def PCA_EXAMPLE(inputfile,k):
     plt.xlabel("Feature")
     plt.ylabel("Principal components")
     return x_trainPCA
+def Corr(inputfile):#尽量传入的数据相对维数较少
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    tips = pd.read_csv(inputfile)
+    print("相关性：")
+    print(tips.corr())
+    # 相关性热力图
+    print("相关性热力图：")
+    print(sns.heatmap(tips.corr()))
+    # 分层相关性热力图
+    print("分层相关性热力图：")
+    print(sns.clustermap(tips.corr()))
+    return True
+def MakeTree_(inputfile):
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import load_iris
+    from sklearn.datasets import load_breast_cancer
+    from sklearn import metrics
+    from sklearn.tree import DecisionTreeClassifier
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import train_test_split
+    from sklearn import tree
+    from sklearn.preprocessing import MinMaxScaler
+    from sklearn import preprocessing
+    df = FillNaN_PD(inputfile)
+    pd_Example = pd.read_csv(inputfile)
+    feature = list(pd_Example.columns.values)  # 提取特征值
+    df.columns = feature
+    target = df['y']
+    X_normal = preprocessing.StandardScaler().fit_transform(df.drop('y', axis=1).to_numpy())
+    X_train, X_test, y_train, y_test = train_test_split(X_normal, target, test_size=0.2, random_state=4)
+    ### 调参部分
+    clf = DecisionTreeClassifier()
+    '''
+    参照readme.md
+    criterion = "gini",
+    splitter = "best",
+    max_depth = None,
+    min_samples_split = 2,
+    min_samples_leaf = 1,
+    min_weight_fraction_leaf = 0.,
+    max_features = None,
+    random_state = None,
+    max_leaf_nodes = None,
+    min_impurity_decrease = 0.,
+    min_impurity_split = None,
+    class_weight = None,
+    presort = 'deprecated',
+    ccp_alpha = 0.0):
+    '''
+    ###
+    clf.fit(X_train, y_train.astype('float'))
+    print(plt.show(tree.plot_tree(clf)))
+    pred = clf.predict(X_test)
+    print(metrics.classification_report(y_test, pred))
+    print(metrics.accuracy_score(y_test, pred))
+    y_score = clf.predict_proba(X_test)[:, 1]
+    fpr, tpr, threshold = metrics.roc_curve(y_test, y_score)
+    roc_auc = metrics.auc(fpr, tpr)
+    # 绘制面积图
+    plt1 = plt.stackplot(fpr, tpr, color='steelblue', alpha=0.5, edgecolor='black')
+    # 添加边际线
+    plt.plot(fpr, tpr, color='black', lw=1)
+    # 添加对角线
+    plt.plot([0, 1], [0, 1], color='red', linestyle='--')
+    # 添加文本信息
+    plt.text(0.5, 0.3, 'ROC curve (area = %0.3f)' % roc_auc)
+    # 添加x轴与y轴标签
+    plt.xlabel('1-Specificity')
+    plt.ylabel('Sensitivity')
+    # 显示图形
+    print(plt.show())
+    from sklearn.metrics import precision_recall_curve
+    precision, recall, thresholds = precision_recall_curve(y_test, clf.predict(X_test))
+    from sklearn.datasets import make_blobs
+    # find threshold closest to zero
+    close_zero = np.argmin(np.abs(thresholds))
+    plt.plot(precision[close_zero], recall[close_zero], 'o', markersize=10,
+             label="threshold zero", fillstyle="none", c='k', mew=2)
+    plt.plot(precision, recall, label="precision recall curve")
+    plt.xlabel("Precision")
+    plt.ylabel("Recall")
+    plt.legend(loc="best")
+    print(plt.show())
+    from sklearn.metrics import roc_curve
+    from sklearn.linear_model import LogisticRegression
+    model = LogisticRegression(solver='newton-cg', multi_class='ovr')
+    model.fit(X_train, y_train)
+    y_pre = model.predict_proba(X_test)
+    y_0 = list(y_pre[:, 1])
+    fpr, tpr, thresholds = roc_curve(y_test, y_0)  # 计算fpr,tpr,thresholds
+    # 计算ks
+    KS_max = 0
+    best_thr = 0
+    for i in range(len(fpr)):
+        if (i == 0):
+            KS_max = tpr[i] - fpr[i]
+            best_thr = thresholds[i]
+        elif (tpr[i] - fpr[i] > KS_max):
+            KS_max = tpr[i] - fpr[i]
+            best_thr = thresholds[i]
 
+    print('最大KS为：', KS_max)
+    print('最佳阈值为：', best_thr)
+    fpr, tpr, thresholds = roc_curve(y_test, y_0)
+    return True
