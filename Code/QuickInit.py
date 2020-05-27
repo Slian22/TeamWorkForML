@@ -3,7 +3,6 @@
 from QuickStart_Rhy.api import ipinfo
 import pandas as pd
 import numpy as np
-from pygame import display
 def accuracy_score(truth, pred):
     """ Returns accuracy score for input truth and predictions. """
 
@@ -424,7 +423,7 @@ def Sample_RandomSearch(inputfile):
     # n_jobs = -1，使用所有的CPU进行训练，默认为1，使用1个CPU
     grid = RandomizedSearchCV(clf1, param_dist, cv=3, scoring='neg_log_loss', n_iter=300, n_jobs=-1)
     # 在训练集上训练
-    grid.fit(X_train.values, np.ravel(trainlabel.values))
+    grid.fit(X_train.values, np.ravel(y_train.values))
     # 返回最优的训练器
     best_estimator = grid.best_estimator_
     print(best_estimator)
