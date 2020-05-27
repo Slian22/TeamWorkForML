@@ -1,5 +1,73 @@
 Machine Learning With Python For TeamWork
 
+```mermaid
+graph LR
+subgraph 数据基础处理
+ida(原始数据)
+idb(数据预处理)
+idc(数据平衡)
+ida-->idb
+idb-->idc
+end
+idc--模型搭建-->iddd
+idc--模型搭建-->idde
+idc--模型搭建-->iddf
+subgraph 模型构建
+iddd(决策树)
+idde(交叉验证)
+iddf(随机搜索)
+end
+subgraph 模型可视化及评估与改进
+iddda(准确率)
+idddb(精确率)
+idddc(召回率)
+idddd(F-score)
+iddde(ROC)
+idddf(KS)
+idddg(Precision-Recall)
+iddd-->iddda
+iddd-->idddb
+iddd-->idddc
+iddd-->idddd
+iddd-->iddde
+iddd-->idddf
+iddd-->idddg
+idde-->iddda
+idde-->idddb
+idde-->idddc
+idde-->idddd
+idde-->iddde
+idde-->idddf
+idde-->idddg
+iddf-->iddda
+iddf-->idddb
+iddf-->idddc
+iddf-->idddd
+iddf-->iddde
+iddf-->idddf
+iddf-->idddg
+end
+```
+
+```mermaid
+graph TD
+subgraph 数据预处理
+ida(删除缺失值)
+idb(填充数据)
+idc(异常值处理)
+idd(特征提取)
+ide(降维)
+idf(OneHotEncode)
+ida-->idb
+idb-->idc
+idc-->idd
+idc-->ide
+idc-->idf
+end
+```
+
+
+
 # 任务清单
 
 ## 1、数据预处理方法
@@ -148,7 +216,7 @@ random自己设置
 
 - [ ] 还没实现
 
-### 4、交叉验证+网格搜索+随机搜索
+## 4、交叉验证+网格搜索+随机搜索
 
 - [ ] 还没实现
 
