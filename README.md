@@ -368,7 +368,113 @@ def Sample_RandomSearch(inputfile):
 # 项目实现
 
 ```python
-def 在写了在写了()：
-	return True
+#%%
+
+from QuickInit import *
+import numpy as np
+import pandas as pd
+#删除缺失值为50%的列
+deleteTheCol(0.5,'sample/model_sample.csv','sample/model_sample1.csv')
+
+#%%
+
+#自行删除ROW
+deleteTheRow('sample/model_sample1.csv','sample/model_sample2.csv')
+
+#%%
+
+#填充缺失值并保存
+pd_=FillNaN_PD('sample/model_sample2.csv')
+pd_.to_csv('sample/model_sample3.csv')
+
+#%%
+
+#One Hot Encode
+from sklearn.preprocessing import OneHotEncoder
+Sample_data_Pandas=FillNaN_PD('sample/model_sample3.csv')
+Sample_data_Numpy=FillNaN_NP('sample/model_sample3.csv')
+enc_data=OneHotEncoder()
+ans=enc_data.fit_transform(Sample_data_Numpy)
+print(Sample_data_Numpy)
+Sample_data_Pandas=pd.DataFrame(Sample_data_Numpy)
+#数值
+from sklearn.preprocessing import MinMaxScaler
+scaler=MinMaxScaler()
+scaler=scaler.fit(Sample_data_Pandas)
+result=scaler.transform(Sample_data_Pandas)
+print(result)
+#StandarLize The Data
+from sklearn.preprocessing import StandardScaler
+result_=scaler.inverse_transform(result)
+scaler_2=StandardScaler()
+scaler_2.fit(Sample_data_Pandas)
+print(scaler_2)
+x_std=scaler_2.transform(result_)
+print(result_)
+pd2=pd.DataFrame(result_)
+print(pd2)
+pd2.to_csv('sample/Pre_Done.csv')
+
+#%%1个
+
+#Smote算法
+from QuickInit import *
+x_smote,y_smote=SMOTE_SAMPLE('sample/Pre_Done.csv')
+pd_=pd.DataFrame(x_smote)
+pd_2=pd.DataFrame(y_smote)
+pd_.to_csv('sample/Pre_X.csv')
+pd_2.to_csv('sample/Pre_Y.csv')
+print(x_smote)
+print(y_smote)
+
+
+#%%
+
+#PCA
+from QuickInit import *
+PCA_=PCA_EXAMPLE('sample/Pre_X.csv',50)
+PCA_=pd.DataFrame(PCA_)
+PCA_.to_csv('sample/PCA_X.csv')
+
+#%%
+
+#Corr
+Corr('sample/PCA_XY.csv')
+
+#%%
+
+Corr('sample/Pre_Smote.csv')
+
+#%%
+
+#MakeTree
+MakeTree_1('sample/PCA_XY.csv')
+
+#%%
+
+MakeTree_1('sample/Pre_Smote.csv')
+
+#%%
+
+from QuickInit import *
+Simplecross_val_score('sample/Pre_Smote.csv')
+
+#%%
+
+from QuickInit import *
+Simplecross_val_score('sample\PCA_XY.csv')
+
+#%%
+from QuickInit import *
+Cross_Validation('sample/Pre_Smote.csv',5)
+#%%
+from QuickInit import *
+Sample_RandomSearch('sample/Pre_Smote.csv')
+
+#%%
+from QuickInit import *
+Sample_RandomSearch('sample/PCA_XY.csv')
+
+#结果展示在ipynb中
 ```
 

@@ -3,6 +3,7 @@
 from QuickStart_Rhy.api import ipinfo
 import pandas as pd
 import numpy as np
+from pygame import display
 def accuracy_score(truth, pred):
     """ Returns accuracy score for input truth and predictions. """
 
@@ -40,10 +41,8 @@ def fit_model_k_fold(X, y,n):
 
     # Create the grid search object
     grid = GridSearchCV(clf, param_grid=params, scoring=scoring_fnc, cv=k_fold)
-    result=pd.DataFrame(grid.cv_results_)
     # Fit the grid search object to the data to compute the optimal model
     grid = grid.fit(X, y)
-    print(result)
     print("Best estimator:\n{}".format(grid.best_estimator_))
     print("Best Score:\n{}".format(grid.best_score_))
     best_model = grid.best_estimator_
@@ -61,7 +60,7 @@ def getTheNumpy(inputfile):
     example=example.values
     return example
 def deleteTheCol(cutoff,file,outfile):
-    #运行这个函数即为自定义删除缺失为（cutoff*100）%的列
+    #运行这个函数即为自定义删除缺失为（1-cutoff）*100%的列
     import pandas as pd
     import os
     inputfile=file
@@ -81,7 +80,7 @@ def deleteTheRow(file,outfile):
     import numpy as np
     import os
     df = pd.read_csv(file)
-    print("一共有：",df.shape[0]-1,"列")
+    print("一共有：",df.shape[1]-1,"列")
     rows_not_null = df.count(axis=1)
     df['NotNumber'] = rows_not_null/df.shape[1]
     if(os.path.exists(outfile)):
@@ -133,17 +132,16 @@ def SMOTE_SAMPLE(inputfile):#返回Numpy
     import pandas as pd
     import numpy as np
     from sklearn import preprocessing
-    from sklearn import model_selection
     from sklearn.model_selection import train_test_split
     from imblearn.over_sampling import SMOTE
     churn = FillNaN_PD(inputfile)
     churn_df = pd.read_csv(inputfile)
     feature = list(churn_df.columns.values)  # 提取特征值
     churn.columns = feature
-    X_normal = preprocessing.StandardScaler().fit_transform(churn.drop('y', axis=1).to_numpy())
+    X_normal = churn.drop('y', axis=1).to_numpy()
     y = churn['y']
-    X_train, X_test, y_train, y_test = train_test_split(X_normal, y, test_size=0.2, random_state=4)#testsize和random_state自己设置
-    over_samples = SMOTE(random_state=1234)#random自己设置
+    X_train, X_test, y_train, y_test = train_test_split(X_normal, y, test_size=0.25, random_state=4)#testsize和random_state自己设置
+    over_samples = SMOTE(random_state=123)#random自己设置
     over_samples_X, over_samples_y = over_samples.fit_sample(X_train, y_train.astype('float'))
     # 重抽样前的类别比例
     print("重抽样前的类别比例")
@@ -158,13 +156,6 @@ def LASSO_EXAMPLE(inputfile):
     import numpy as np
     import pandas as pd
     from sklearn.linear_model import Lasso,LassoCV,LassoLarsCV
-    from sklearn.linear_model import Lasso
-    from keras.models import Sequential  # 有的同学可能会遇到 kernel died，restarting的问题，可参见我的另一片文章
-    from keras.layers.core import Dense, Activation
-    import matplotlib.pyplot as plt
-    # import tensorflow as tf
-
-    #
     data = pd.read_csv(inputfile)
     des = data.describe()
     r = des.T
@@ -180,7 +171,9 @@ def LASSO_EXAMPLE(inputfile):
 
 def PCA_EXAMPLE(inputfile,k):
     from sklearn.decomposition import PCA
-    x_std = FillNaN_NP(inputfile)#自定义化数据
+    from sklearn import preprocessing
+    x_std = FillNaN_PD(inputfile)#自定义化数据
+    x_std = preprocessing.StandardScaler().fit_transform(x_std.to_numpy())
     pca=PCA(n_components=k)
     pca.fit(x_std)
     x_trainPCA = pca.transform(x_std)
@@ -199,7 +192,7 @@ def PCA_EXAMPLE(inputfile,k):
 def Corr(inputfile):#尽量传入的数据相对维数较少
     import matplotlib.pyplot as plt
     import seaborn as sns
-    tips = pd.read_csv(inputfile)
+    tips =FillNaN_PD(inputfile)
     print("相关性：")
     print(tips.corr())
     # 相关性热力图
@@ -211,15 +204,13 @@ def Corr(inputfile):#尽量传入的数据相对维数较少
     return True
 def MakeTree_1(inputfile):
     import matplotlib.pyplot as plt
-    from sklearn.datasets import load_iris
-    from sklearn.datasets import load_breast_cancer
+
     from sklearn import metrics
     from sklearn.tree import DecisionTreeClassifier
-    from sklearn.ensemble import RandomForestClassifier
+
     from sklearn.model_selection import train_test_split
     from sklearn import tree
-    from sklearn.preprocessing import MinMaxScaler
-    from sklearn import preprocessing
+    import os
     df = FillNaN_PD(inputfile)
     pd_Example = pd.read_csv(inputfile)
     feature = list(pd_Example.columns.values)  # 提取特征值
@@ -227,7 +218,7 @@ def MakeTree_1(inputfile):
     del feature2[-1]# 提取特征值-1用于graphviz
     df.columns = feature
     target = df['y']
-    X_normal = preprocessing.StandardScaler().fit_transform(df.drop('y', axis=1).to_numpy())
+    X_normal = df.drop('y', axis=1).to_numpy()
     X_train, X_test, y_train, y_test = train_test_split(X_normal, target, test_size=0.2, random_state=4)
     ### 调参部分
     clf = DecisionTreeClassifier()
@@ -251,6 +242,8 @@ def MakeTree_1(inputfile):
     ###
     clf.fit(X_train, y_train.astype('float'))
     from sklearn.tree import export_graphviz
+    if os.path.exists("tree.dot"):
+        os.remove("tree.dot")
     export_graphviz(clf,out_file="tree.dot",feature_names=feature2,impurity=False,filled=True)
     import graphviz
     with open("tree.dot") as f:
@@ -358,9 +351,9 @@ def Simplecross_val_score(inputfile):
     import matplotlib.pyplot as plt
     from sklearn.model_selection import validation_curve
     from sklearn.svm import SVC
-    c_range = [1e-3, 1e-2, 0.1, 1, 10, 100, 1000, 10000]  # C的取值范围
+    c_range = [0.1, 1, 10,100]  # C的取值范围
 
-    train_scores, test_scores = validation_curve(SVC(kernel='linear'), X_train, y_train, param_name='C',
+    train_scores, test_scores = validation_curve(SVC(kernel='rbf'), X_train, y_train, param_name='C',
                                                  param_range=c_range, cv=5,
                                                  scoring='accuracy')  # 通过验证曲线得到不同取值的C在验证集合训练集上的得分。
     train_scores_mean = np.mean(train_scores,
@@ -402,26 +395,25 @@ def Sample_RandomSearch(inputfile):
     out = df['y']
     trainlabel=df['y']
     features = df.drop('y', axis=1)
-    X_train, X_test, y_train, y_test = train_test_split(features, out, test_size=0.2, random_state=0)  ##自行定义即可
+    X_train, X_test, y_train, y_test = train_test_split(features, out, test_size=0.25, random_state=0)  ##自行定义即可
     # 分类器使用 xgboost
     clf1 = xgb.XGBClassifier()
 
     # 设定搜索的xgboost参数搜索范围，值搜索XGBoost的主要6个参数
     param_dist = {
-        'criterion': np.array(['entropy', 'gini']),
-        'n_estimators': range(80, 200, 4),
-        'max_depth': range(2, 15, 1),
-        'learning_rate': np.linspace(0.01, 2, 20),
-        'subsample': np.linspace(0.7, 0.9, 20),
-        'colsample_bytree': np.linspace(0.5, 0.98, 10),
-        'min_child_weight': range(1, 9, 1)
+        'n_estimators': range(80, 100, 4),
+        'max_depth': range(2,10, 1),
+        'learning_rate': np.linspace(0.01, 2, 5),
+        'subsample': np.linspace(0.7, 0.9, 5),
+        'colsample_bytree': np.linspace(0.5, 0.98, 5),
+        'min_child_weight': range(1, 5, 1)
     }
     # RandomizedSearchCV参数说明，clf1设置训练的学习器
     # param_dist字典类型，放入参数搜索范围
     # scoring = 'neg_log_loss'，精度评价方式设定为“neg_log_loss“
-    # n_iter=300，训练300次，数值越大，获得的参数精度越大，但是搜索时间越长
-    # n_jobs = -1，使用所有的CPU进行训练，默认为1，使用1个CPU
-    grid = RandomizedSearchCV(clf1, param_dist, cv=3, scoring='neg_log_loss', n_iter=300, n_jobs=-1)
+    # n_iter=20，训练20次，数值越大，获得的参数精度越大，但是搜索时间越长
+    # n_jobs = -1，使用所有的CPU进行训练;默认为1，使用1个CPU
+    grid = RandomizedSearchCV(clf1, param_dist, cv=3, scoring='neg_log_loss', n_iter=20, n_jobs=1)
     # 在训练集上训练
     grid.fit(X_train.values, np.ravel(y_train.values))
     # 返回最优的训练器
