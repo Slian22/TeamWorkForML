@@ -496,6 +496,9 @@ Sample_RandomSearch('sample/Pre_Smote.csv')
 from QuickInit import *
 Sample_RandomSearch('sample/PCA_XY.csv')
 
+#%%
+from QuickInit import *
+FindPCA_N('sample/Pre_X.csv')
 #结果展示在ipynb中
 ```
 
