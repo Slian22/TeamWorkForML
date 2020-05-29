@@ -188,6 +188,27 @@ def PCA_EXAMPLE(inputfile,k):
     plt.xlabel("Feature")
     plt.ylabel("Principal components")
     return x_trainPCA
+def FindPCA_N(inputfile):
+    from sklearn.decomposition import PCA
+    from sklearn import preprocessing
+    from matplotlib import pyplot as plt
+    x_std = FillNaN_PD(inputfile)  # 自定义化数据
+    x_std = preprocessing.StandardScaler().fit_transform(x_std.to_numpy())
+    pca = PCA()
+    pca.fit(x_std)
+    ratio = pca.explained_variance_ratio_
+    print("pca.components_", pca.components_.shape)
+    print("pca_var_ratio", pca.explained_variance_ratio_.shape)
+    # 绘制图形
+    plt.plot([i for i in range(x_std.shape[1])],
+             [np.sum(ratio[:i + 1]) for i in range(x_std.shape[1])])
+    plt.xticks(np.arange(x_std.shape[1], step=5))
+    plt.yticks(np.arange(0, 1.01, 0.05))
+    plt.ylabel('cumulative explained variance')
+    plt.xlabel('number of components after PCA dimension reduction')
+    plt.grid()
+    plt.show()
+    return True
 def Corr(inputfile):#尽量传入的数据相对维数较少
     import matplotlib.pyplot as plt
     import seaborn as sns

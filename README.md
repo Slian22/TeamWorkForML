@@ -107,6 +107,14 @@ Machine Learning With Python For TeamWork
   # 相关性+相关性热力图+分层相关性热力图
   # 依赖['seaborn','matplotlib']
   ```
+  
+  ```python
+  def FindPCA_N(inputfile):#传入文件仅包含X，不包含y列
+      return True
+  #会输出pca.components_+pca_var_ratio以及最佳PCA选择维数的曲线
+  ```
+  
+  
 
 ### *1.6 `LASSO`
 
