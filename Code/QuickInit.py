@@ -22,7 +22,6 @@ def accuracy_score(truth, pred):
 def fit_model_k_fold(X, y,n):
     """ Performs grid search over the 'max_depth' parameter for a
         decision tree regressor trained on the input data [X, y]. """
-    from sklearn.model_selection import train_test_split
     from sklearn.model_selection import GridSearchCV
     from sklearn.model_selection import KFold
     from sklearn.metrics import make_scorer
@@ -328,66 +327,33 @@ def Cross_Validation(inputfile,n):
     print("k_fold Parameter 'criterion' is {} for the optimal model.".format(clf.get_params()['criterion']))
 
     return True
-def Simplecross_val_score(inputfile):
-    from sklearn.neighbors import KNeighborsClassifier
+def Simplecross_val_score(inputfile,n):
     from sklearn.model_selection import cross_val_score
     from sklearn.model_selection import train_test_split
+    from sklearn.tree import DecisionTreeClassifier
     df = FillNaN_PD(inputfile)
     pd_Example = pd.read_csv(inputfile)
     feature = list(pd_Example.columns.values)
     df.columns = feature  # 添加卡特征值
     out = df['y']
     features = df.drop('y', axis=1)
-    X_train, X_test, y_train, y_test = train_test_split(features, out, test_size=0.2, random_state=0)  ##自行定义即可
-    k_range = [2, 4, 5, 10]  # k选择2，4，5，10四个参数
-    cv_scores = []  # 分别放用4个参数训练得到的精确度
-    for k in k_range:
-        knn = KNeighborsClassifier(n_neighbors=k)
-        # *****下面这句进行了交叉验证**********
-        scores = cross_val_score(knn, X_train, y_train, cv=3)  # 进行3折交叉验证，返回的是3个值即每次验证的精确度
-        cv_score = np.mean(scores)  # 把某个k对应的精确度求平均值
-        print('k={}，验证集上的准确率={:.3f}'.format(k, cv_score))
-        cv_scores.append(cv_score)
-    import matplotlib.pyplot as plt
-    from sklearn.model_selection import validation_curve
-    from sklearn.svm import SVC
-    c_range = [0.1, 1, 10,100]  # C的取值范围
-
-    train_scores, test_scores = validation_curve(SVC(kernel='rbf'), X_train, y_train, param_name='C',
-                                                 param_range=c_range, cv=5,
-                                                 scoring='accuracy')  # 通过验证曲线得到不同取值的C在验证集合训练集上的得分。
-    train_scores_mean = np.mean(train_scores,
-                                axis=1)  # 对每一个参数C，他通过5折交叉验证后都会得到5个得分，这里就是把这5个得分求均值。求得的均值用于接下来的绘制每个参数的取值对应的得分。
-    train_scores_std = np.std(train_scores, axis=1)  # 求标准差是为了画出它的置信区间
-    test_scores_mean = np.mean(test_scores, axis=1)
-    test_scores_std = np.std(test_scores, axis=1)
-    plt.figure(figsize=(10, 8))
-    plt.title('Validation Curve with SVM')
-    plt.xlabel('C')
-    plt.ylabel('Score')
-    plt.ylim(0.0, 1.1)
-    lw = 2
-    plt.semilogx(c_range, train_scores_mean, label="Training score",
-                 color="darkorange", lw=lw)
-    plt.fill_between(c_range, train_scores_mean - train_scores_std,
-                     train_scores_mean + train_scores_std, alpha=0.2,
-                     color="darkorange", lw=lw)  # 画出置信区间
-    plt.semilogx(c_range, test_scores_mean, label="Cross-validation score",
-                 color="navy", lw=lw)
-    plt.fill_between(c_range, test_scores_mean - test_scores_std,
-                     test_scores_mean + test_scores_std, alpha=0.2,
-                     color="navy", lw=lw)
-    plt.legend(loc="best")
-    plt.show()
+    X_train, X_test, y_train, y_test = train_test_split(features, out, test_size=0.25, random_state=0)  ##自行定义即可
+    knn = DecisionTreeClassifier()
+    knn.fit(X_train, y_train.astype('float'))#构建决策树
+    # *****下面这句进行了交叉验证**********
+    scores = cross_val_score(knn, features, out, cv=n)  # 进行n折交叉验证，返回的是n个值即每次验证的精确度
+    cv_score = np.mean(scores)  # 把某个k对应的精确度求平均值
+    print('平均的准确率={:.3f}'.format(cv_score))
+    print('std={:.3f}'.format(np.std(scores)))
     return True
 def Sample_RandomSearch(inputfile):
-    from sklearn.neighbors import KNeighborsClassifier
-    from sklearn.model_selection import cross_val_score
+    import scipy
+    from sklearn.tree import DecisionTreeClassifier
     import numpy as np
     import pandas as pd
-    import xgboost as xgb
     from sklearn.model_selection import RandomizedSearchCV
     from sklearn.model_selection import train_test_split
+    from sklearn.metrics import classification_report
     df = FillNaN_PD(inputfile)
     pd_Example = pd.read_csv(inputfile)
     feature = list(pd_Example.columns.values)
@@ -396,29 +362,18 @@ def Sample_RandomSearch(inputfile):
     trainlabel=df['y']
     features = df.drop('y', axis=1)
     X_train, X_test, y_train, y_test = train_test_split(features, out, test_size=0.25, random_state=0)  ##自行定义即可
-    # 分类器使用 xgboost
-    clf1 = xgb.XGBClassifier()
-
-    # 设定搜索的xgboost参数搜索范围，值搜索XGBoost的主要6个参数
-    param_dist = {
-        'n_estimators': range(80, 100, 4),
-        'max_depth': range(2,10, 1),
-        'learning_rate': np.linspace(0.01, 2, 5),
-        'subsample': np.linspace(0.7, 0.9, 5),
-        'colsample_bytree': np.linspace(0.5, 0.98, 5),
-        'min_child_weight': range(1, 5, 1)
-    }
-    # RandomizedSearchCV参数说明，clf1设置训练的学习器
-    # param_dist字典类型，放入参数搜索范围
-    # scoring = 'neg_log_loss'，精度评价方式设定为“neg_log_loss“
-    # n_iter=20，训练20次，数值越大，获得的参数精度越大，但是搜索时间越长
-    # n_jobs = -1，使用所有的CPU进行训练;默认为1，使用1个CPU
-    grid = RandomizedSearchCV(clf1, param_dist, cv=3, scoring='neg_log_loss', n_iter=20, n_jobs=1)
-    # 在训练集上训练
-    grid.fit(X_train.values, np.ravel(y_train.values))
-    # 返回最优的训练器
-    best_estimator = grid.best_estimator_
-    print(best_estimator)
-    # 输出最优训练器的精度
-    print(grid.best_score_)
+    tuned_parameters = {'max_depth': range(1, 21), 'criterion': np.array(['entropy', 'gini'])}#指数分布
+    clf = RandomizedSearchCV(DecisionTreeClassifier(), tuned_parameters, cv=10,
+                             scoring="accuracy", n_iter=100)
+    clf.fit(X_train, y_train)
+    print("Best parameters set found:", clf.best_params_)
+    print("Randomized Grid scores:")
+    #     for params, mean_score, scores in clf.fit_params,clf.mean_score,clf.score:
+    #         print("\t%0.3f (+/-%0.03f) for %s" % (mean_score, scores() * 2, params))
+    #     print("\t%0.3f (+/-%0.03f) for %s" % (clf.mean_score,clf.score * 2, clf.fit_params))
+    print(clf)
+    print("Optimized Score:", clf.score(X_test, y_test))
+    print("Detailed classification report:")
+    y_true, y_pred = y_test, clf.predict(X_test)
+    print(classification_report(y_true, y_pred))
     return True

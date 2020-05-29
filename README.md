@@ -235,11 +235,19 @@ Returns
   Array of scores of the estimator for each run of the cross validation.
 
 ```python
-def Simplecross_val_score(inputfile):#传入输入文件
+def Simplecross_val_score(inputfile,n):#传入输入文件
     return True
-#会出输出k={}，验证集上的准确率={:.3f}以及SVM 在不同的C值时，它在训练集和交叉验证上的分数的图形
+#会出输出平均准确率={:.3f},以及STD
 #可自行调整Simplecross_val_score()中各种参数
+#自行调整Simplecross_val_score中DecisionTreeClassifier()参数
 ```
+
+```shell
+#Waring：
+如果纯用交叉验证的话，他会告诉你决策树做的怎么样；因此还是在决策树上面做的
+```
+
+
 
 - [x] 简单的网格搜索
 
@@ -344,9 +352,14 @@ Parameters
 ```python
 def Sample_RandomSearch(inputfile):
     #里面的参数全部可调
-    #额外附加['xgboost']
+    #['scipy']额外附加库
     return True
-#输出最优的训练器+最优训练器的精度->决策树
+#自行调整parameters中的随机搜索的参数
+#本项目采用parameters{'max_depth': range(1, 21), 'criterion': np.array(['entropy', 'gini'])}
+#Best parameters set found:
+#Randomized Grid scores:
+#Optimized Score:
+#Detailed classification report:
 ```
 
 
