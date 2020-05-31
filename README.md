@@ -2,7 +2,7 @@
 
 Machine Learning With Python For TeamWork
 
-![1](img/)
+![1](img/1.png)
 
 1.jpg需要最后做完绘制
 
