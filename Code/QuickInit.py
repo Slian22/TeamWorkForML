@@ -1,24 +1,19 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-from QuickStart_Rhy.api import ipinfo
 import pandas as pd
 import numpy as np
-from pygame import display
+from IPython.display import *
 def accuracy_score(truth, pred):
     """ Returns accuracy score for input truth and predictions. """
-
     # Ensure that the number of predictions matches number of outcomes
     # 确保预测的数量与结果的数量一致
     if len(truth) == len(pred):
-
         # Calculate and return the accuracy as a percent
         # 计算预测准确率（百分比）
         # 用bool的平均数算百分比
         return (truth == pred).mean() * 100
-
     else:
         return 0
-
 def fit_model_k_fold(X, y,n):
     """ Performs grid search over the 'max_depth' parameter for a
         decision tree regressor trained on the input data [X, y]. """
@@ -29,15 +24,11 @@ def fit_model_k_fold(X, y,n):
     # Create cross-validation sets from the training data
     # cv_sets = ShuffleSplit(n_splits = 10, test_size = 0.20, random_state = 0)
     k_fold = KFold(n_splits=n)
-
     #  Create a decision tree clf object
     clf = DecisionTreeClassifier(random_state=80)
-
     params = {'max_depth': range(1, 21), 'criterion': np.array(['entropy', 'gini'])}
-
     # Transform 'accuracy_score' into a scoring function using 'make_scorer'
     scoring_fnc = make_scorer(accuracy_score)
-
     # Create the grid search object
     grid = GridSearchCV(clf, param_grid=params, scoring=scoring_fnc, cv=k_fold)
     # Fit the grid search object to the data to compute the optimal model
@@ -76,7 +67,6 @@ def deleteTheCol(cutoff,file,outfile):
 def deleteTheRow(file,outfile):
     #自行删除空值多的行。
     import pandas as pd
-    import numpy as np
     import os
     df = pd.read_csv(file)
     print("一共有：",df.shape[1]-1,"列")
@@ -89,7 +79,6 @@ def deleteTheRow(file,outfile):
 def FillNaN_PD(inputfile2):#不带标签的Pandas，自行补充
     import numpy as np
     import pandas as pd
-    import os
     print(inputfile2)
     # Fill The Data using SimpleImputer
     from sklearn.impute import SimpleImputer
@@ -129,8 +118,6 @@ def CutTheTrain(inputfile,p):#手动切割训练集及测试集
     return train,test
 def SMOTE_SAMPLE(inputfile):#返回Numpy
     import pandas as pd
-    import numpy as np
-    from sklearn import preprocessing
     from sklearn.model_selection import train_test_split
     from imblearn.over_sampling import SMOTE
     churn = FillNaN_PD(inputfile)
@@ -167,7 +154,6 @@ def LASSO_EXAMPLE(inputfile):
     model_coef.columns = ['x%d' % i for i in np.arange(13) + 1]
     print(model_coef)
     # 由系数表可知，系数值为零的要剔除
-
 def PCA_EXAMPLE(inputfile,k):
     from sklearn.decomposition import PCA
     from sklearn import preprocessing
@@ -210,7 +196,6 @@ def FindPCA_N(inputfile):
     plt.show()
     return True
 def Corr(inputfile):#尽量传入的数据相对维数较少
-    import matplotlib.pyplot as plt
     import seaborn as sns
     tips =FillNaN_PD(inputfile)
     print("相关性：")
@@ -224,13 +209,10 @@ def Corr(inputfile):#尽量传入的数据相对维数较少
     return True
 def MakeTree_1(inputfile):
     import matplotlib.pyplot as plt
-
     from sklearn import metrics
     from sklearn.tree import DecisionTreeClassifier
-
     from sklearn.model_selection import train_test_split
     from sklearn import tree
-    import os
     df = FillNaN_PD(inputfile)
     pd_Example = pd.read_csv(inputfile)
     feature = list(pd_Example.columns.values)  # 提取特征值
@@ -262,8 +244,9 @@ def MakeTree_1(inputfile):
     ###
     clf.fit(X_train, y_train.astype('float'))
     from sklearn.tree import export_graphviz
-    if os.path.exists("tree.dot"):
-        os.remove("tree.dot")
+    import os
+    if os.path.exists('tree.dot'):
+        os.remove('tree.dot')
     export_graphviz(clf,out_file="tree.dot",feature_names=feature2,impurity=False,filled=True)
     import graphviz
     with open("tree.dot") as f:
@@ -290,8 +273,7 @@ def MakeTree_1(inputfile):
     # 显示图形
     print(plt.show())
     from sklearn.metrics import precision_recall_curve
-    precision, recall, thresholds = precision_recall_curve(y_test, clf.predict(X_test))
-    from sklearn.datasets import make_blobs
+    precision, recall, thresholds = precision_recall_curve(y_test, clf.predict_proba(X_test)[:,1])
     # find threshold closest to zero
     close_zero = np.argmin(np.abs(thresholds))
     plt.plot(precision[close_zero], recall[close_zero], 'o', markersize=10,
@@ -302,10 +284,7 @@ def MakeTree_1(inputfile):
     plt.legend(loc="best")
     print(plt.show())
     from sklearn.metrics import roc_curve
-    from sklearn.linear_model import LogisticRegression
-    model = LogisticRegression(solver='newton-cg', multi_class='ovr')
-    model.fit(X_train, y_train)
-    y_pre = model.predict_proba(X_test)
+    y_pre = clf.predict_proba(X_test)
     y_0 = list(y_pre[:, 1])
     fpr, tpr, thresholds = roc_curve(y_test, y_0)  # 计算fpr,tpr,thresholds
     # 计算ks
@@ -318,10 +297,8 @@ def MakeTree_1(inputfile):
         elif (tpr[i] - fpr[i] > KS_max):
             KS_max = tpr[i] - fpr[i]
             best_thr = thresholds[i]
-
     print('最大KS为：', KS_max)
     print('最佳阈值为：', best_thr)
-    fpr, tpr, thresholds = roc_curve(y_test, y_0)
     return True
 def Cross_Validation(inputfile,n):
     from sklearn import tree
@@ -346,7 +323,6 @@ def Cross_Validation(inputfile,n):
     print(graph)
     print ("k_fold Parameter 'max_depth' is {} for the optimal model.".format(clf.get_params()['max_depth']))
     print("k_fold Parameter 'criterion' is {} for the optimal model.".format(clf.get_params()['criterion']))
-
     return True
 def Simplecross_val_score(inputfile,n):
     from sklearn.model_selection import cross_val_score
@@ -368,7 +344,6 @@ def Simplecross_val_score(inputfile,n):
     print('std={:.3f}'.format(np.std(scores)))
     return True
 def Sample_RandomSearch(inputfile):
-    import scipy
     from sklearn.tree import DecisionTreeClassifier
     import numpy as np
     import pandas as pd
