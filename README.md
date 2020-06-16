@@ -127,6 +127,22 @@ Machine Learning With Python For TeamWork
 
 ### 2.1 `SMOTE`算法
 
+```python
+class imblearn.over_sampling.SMOTE(sampling_strategy='auto', random_state=None, k_neighbors=5, m_neighbors='deprecated', out_step='deprecated', kind='deprecated', svm_estimator='deprecated', n_jobs=1, ratio=None)
+```
+
+**sampling_strategy**:float, str, dict or callable, (default=’auto’)
+
+Sampling information to resample the data set.
+
+When `float`, it corresponds to the desired ratio of the number of samples in the minority class over the number of samples in the majority class after resampling. Therefore, the ratio is expressed as ![\alpha_{os} = N_{rm} / N_{M}](https://imbalanced-learn.readthedocs.io/en/stable/_images/math/90eac0e6a9ea262b1ffcfbf3630fe85d07920bfe.png) where ![N_{rm}](https://imbalanced-learn.readthedocs.io/en/stable/_images/math/4d8ffbb0b7a390d3405b1e36c7237b7cff68fe5f.png) is the number of samples in the minority class after resampling and ![N_{M}](https://imbalanced-learn.readthedocs.io/en/stable/_images/math/d3a9c47ded0bdc6c1a2b4c6bcb3779923ac1560e.png) is the number of samples in the majority class.
+
+人话就是：当`sampling_strategy`=1/3时，相当于重采样后少数类中的样本数/多数类中的样本数=1/3
+
+> Warning
+>
+> `float` is only available for **binary** classification. An error is raised for multi-class classification.
+
 - [x] `SMOTE`，也可自己手动划分数据集
 
   ```python
@@ -139,9 +155,10 @@ Machine Learning With Python For TeamWork
   ```
 
 ```python
-def SMOTE_SAMPLE(inputfile):#返回Numpy
+def SMOTE_SAMPLE(inputfile,n):#返回Numpy
     return over_samples_X,over_samples_y
 '''
+n代表最后想重采样后少数类中的样本数/多数类中的样本数=1/n
 testsize和random_state自己设置
 random自己设置
 '''
