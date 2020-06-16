@@ -443,7 +443,7 @@ def MakeTree_2(inputfile):
     '''
     参照readme.md
     默认值
-                n_estimators=100,
+               n_estimators=100,
                  criterion="gini",
                  max_depth=None,
                  min_samples_split=2,
